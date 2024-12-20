@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Real-Time File Monitoring </title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0ff;
+            text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.3);
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        th {
+            background: linear-gradient(45deg, #1e5799, #2b88d8);
+            text-shadow: 0px 0px 5px rgba(0, 255, 255, 0.8);
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .alert {
+            color: #ff4c4c;
+            font-weight: bold;
+            text-shadow: 0px 0px 5px rgba(255, 76, 76, 0.8);
+        }
+
+        .refresh-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background: linear-gradient(45deg, #0f0, #0ff);
+            color: #000;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #0ff, #0f0);
+        }
+    </style>
+    <script>
+        async function fetchAlerts() {
+            const response = await fetch("/alert");
+            const alerts = await response.json();
+            const alertsContainer = document.getElementById("alert");
+            alertsContainer.innerHTML = "";
+
+            alerts.forEach(alert => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${alert.type}</td>
+                    <td class="${alert.alert ? 'alert' : ''}">${alert.path}</td>
+                    <td>${alert.size}</td>
+                    <td>${alert.timestamp}</td>
+                    <td>${alert.alert || ''}</td>
+                `;
+                alertsContainer.appendChild(row);
+            });
+        }
+
+        setInterval(fetchAlerts, 3000); // Fetch alerts every 3 seconds
+    </script>
+</head>
+<body>
+    <h1>🎮 Real-Time File Monitoring 🎮</h1>
+    <a href="#" class="refresh-btn" onclick="fetchAlerts()">🔄 Refresh Data</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Path</th>
+                <th>Size (bytes)</th>
+                <th>Timestamp</th>
+                <th>Alert</th>
+            </tr>
+        </thead>
+        <tbody id="alert"></tbody>
+    </table>
+    
+</body>
+</html>

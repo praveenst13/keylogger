@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: #0ff;
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1, h2 {
+            text-transform: uppercase;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .activity-section {
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #0ff;
+            box-shadow: 0 0 20px #0ff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #101010;
+            border: 1px solid #444;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #0ff;
+        }
+
+        .glow {
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
+        }
+
+        footer {
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.8em;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1 class="glow">Real-Time Monitoring Dashboard</h1>
+    <div class="container">
+        <div class="activity-section">
+            <h2 class="glow">DNS Queries</h2>
+            <ul id="dns_queries">
+                <!-- Real-time updates will populate here -->
+            </ul>
+        </div>
+        <div class="activity-section">
+            <h2 class="glow">SMTP Connections</h2>
+            <ul id="smtp_connections">
+                <!-- Real-time updates will populate here -->
+            </ul>
+        </div>
+        <div class="activity-section">
+            <h2 class="glow">Suspicious Processes</h2>
+            <ul id="processes">
+                <!-- Real-time updates will populate here -->
+            </ul>
+        </div>
+    </div>
+    <footer>
+        &copy; 2024 Gaming Monitor Interface
+    </footer>
+
+    <script>
+        const socket = io();
+
+        function updateList(id, data) {
+            const list = document.getElementById(id);
+            list.innerHTML = ""; // Clear the list
+            for (const key in data) {
+                const item = data[key];
+                const li = document.createElement("li");
+                li.innerHTML = `<strong>${key}:</strong> Count: ${item.count}, Last Seen: ${new Date(item.last_seen * 1000).toLocaleString()}`;
+                list.appendChild(li);
+            }
+        }
+
+        socket.on("update_activity", (data) => {
+            if (data.dns_queries) updateList("dns_queries", data.dns_queries);
+            if (data.smtp_connections) updateList("smtp_connections", data.smtp_connections);
+            if (data.processes) updateList("processes", data.processes);
+        });
+    </script>
+</body>
+</html>

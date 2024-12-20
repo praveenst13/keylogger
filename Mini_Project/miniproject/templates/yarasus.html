@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YARA Suspected Processes</title>
+    <link rel="stylesheet" href="/static/styles.css"> <!-- Add your CSS file if needed -->
+</head>
+<body>
+    <header>
+        <h1>Suspicious Processes Detected by YARA</h1>
+    </header>
+
+    <section>
+        <!-- Display any detection alerts -->
+        <h2>Detection Alerts</h2>
+        {% if detection_alerts %}
+            <ul>
+                {% for alert in detection_alerts %}
+                    <li>{{ alert }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No detection alerts at this time.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <!-- List YARA-matched suspicious processes -->
+        <h2>YARA Matched Suspicious Processes</h2>
+        {% if yara_matched_processes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>PID</th>
+                        <th>Process Name</th>
+                        <th>File Path</th>
+                        <th>Matched Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in yara_matched_processes %}
+                        <tr>
+                            <td>{{ process.pid }}</td>
+                            <td>{{ process.name }}</td>
+                            <td>{{ process.exe }}</td>
+                            <td>{{ process.rule }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No YARA-matched suspicious processes detected.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <!-- High CPU usage process -->
+        <h2>High CPU Usage Process</h2>
+        {% if high_cpu_proc %}
+            <p>
+                <strong>Process Name:</strong> {{ high_cpu_proc.name }} <br>
+                <strong>PID:</strong> {{ high_cpu_proc.pid }} <br>
+                <strong>CPU Usage:</strong> {{ high_cpu_proc.cpu_percent }}% <br>
+                <strong>File Path:</strong> {{ high_cpu_proc.exe }}
+            </p>
+        {% else %}
+            <p>No high CPU usage process detected.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <!-- High Memory usage process -->
+        <h2>High Memory Usage Process</h2>
+        {% if high_mem_proc %}
+            <p>
+                <strong>Process Name:</strong> {{ high_mem_proc.name }} <br>
+                <strong>PID:</strong> {{ high_mem_proc.pid }} <br>
+                <strong>Memory Usage:</strong> {{ high_mem_proc.memory_percent }}% <br>
+                <strong>File Path:</strong> {{ high_mem_proc.exe }}
+            </p>
+        {% else %}
+            <p>No high memory usage process detected.</p>
+        {% endif %}
+    </section>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yara Suspected Processes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin: 0;
+        }
+        .container {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .alert {
+            background-color: #ffcccc;
+            color: #b30000;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #b30000;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yara Suspected Processes</h1>
+    <div class="container">
+        <!-- Detection Alerts Section -->
+        {% if detection_alerts %}
+            <div class="alert">
+                <strong>Detection Alerts:</strong> 
+                <ul>
+                    {% for alert in detection_alerts %}
+                        <li>{{ alert }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Yara Matched Processes Section -->
+        <h2>Yara Matched Processes</h2>
+        {% if yara_matched_processes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Process Name</th>
+                        <th>PID</th>
+                        <th>Matched Rules</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in yara_matched_processes %}
+                        <tr>
+                            <td>{{ process.name }}</td>
+                            <td>{{ process.pid }}</td>
+                            <td>{{ process.rules | join(', ') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No processes matched Yara rules.</p>
+        {% endif %}
+
+        <!-- High CPU Usage Processes Section -->
+        <h2>High CPU Usage Processes</h2>
+        {% if high_cpu_proc %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Process Name</th>
+                        <th>PID</th>
+                        <th>CPU Usage (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in high_cpu_proc %}
+                        <tr>
+                            <td>{{ process.name }}</td>
+                            <td>{{ process.pid }}</td>
+                            <td>{{ process.cpu_usage }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No high CPU usage processes detected.</p>
+        {% endif %}
+
+        <!-- High Memory Usage Processes Section -->
+        <h2>High Memory Usage Processes</h2>
+        {% if high_mem_proc %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Process Name</th>
+                        <th>PID</th>
+                        <th>Memory Usage (MB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in high_mem_proc %}
+                        <tr>
+                            <td>{{ process.name }}</td>
+                            <td>{{ process.pid }}</td>
+                            <td>{{ process.memory_usage }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No high memory usage processes detected.</p>
+        {% endif %}
+    </div>
+    <div class="footer">
+        &copy; 2024 - Yara Process Monitoring System
+    </div>
+</body>
+</html>
