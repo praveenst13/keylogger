@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Threat Log</title>
+    <script>
+        async function fetchAlerts() {
+            const response = await fetch("/alerts");
+            const alerts = await response.json();
+            const alertsTable = document.getElementById("alerts");
+            alertsTable.innerHTML = "";
+
+            alerts.forEach(alert => {
+                const row = alertsTable.insertRow();
+                row.insertCell(0).textContent = alert.type;
+                row.insertCell(1).textContent = alert.path;
+                row.insertCell(2).textContent = alert.size;
+                row.insertCell(3).textContent = alert.timestamp;
+                row.insertCell(4).textContent = alert.alert;
+            });
+        }
+
+        window.onload = fetchAlerts;
+    </script>
+</head>
+<body>
+    <h1>Historical Threat Log</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Path</th>
+                <th>Size (bytes)</th>
+                <th>Timestamp</th>
+                <th>Alert</th>
+            </tr>
+        </thead>
+        <tbody id="alerts"></tbody>
+    </table>
+</body>
+</html>

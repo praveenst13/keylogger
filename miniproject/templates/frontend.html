@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            color: #fff;
+            display: flex;
+            overflow: hidden;
+        }
+        body {
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+    color: #fff;
+    display: flex;
+    overflow-y: auto; /* Enable vertical scrolling */
+    height: 100vh;    /* Ensure proper viewport height allocation */
+}
+
+        /* Neon Button Glow Effect */
+        a {
+            text-decoration: none;
+            color: #0ff;
+            transition: color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        a:hover {
+            color: #ff00ff;
+            box-shadow: 0 0 10px #0ff, 0 0 20px #ff00ff;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 220px;
+            background: #1a1a2e;
+            padding: 20px;
+            border-right: 2px solid #0ff;
+            height: 100vh;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sidebar ul li a {
+            color: #0ff;
+        }
+
+        /* Content Section */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h2 {
+            font-size: 36px;
+            text-align: center;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #00f;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .highlight-blink {
+    animation: blink-animation 1s infinite;
+}
+
+@keyframes blink-animation {
+    50% {
+        background-color: yellow; /* Highlight color */
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+
+        /* Chart Section */
+        .chart-container {
+            background: #1a1a2e;
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px #ff00ff, 0 0 30px #0ff;
+            margin-bottom: 20px;
+        }
+
+        .chart-container h3 {
+            font-size: 20px;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #00f;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Animations */
+        canvas {
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #ff00ff;
+            }
+            to {
+                box-shadow: 0 0 20px #0ff;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <ul>
+            <li><a href="frontend">Dashboard</a></li>
+            <li><a href="process">Process</a></li>
+            <li><a href="network">Network Monitor</a></li>
+            <li><a href="filemonitor">File Monitor</a></li>
+        </ul>
+    </aside>
+
+    <main class="content">
+        <section class="dashboard">
+            <h2>Dashboard</h2>
+            
+            <div class="chart-container">
+                <h3>CPU Usage</h3>
+                <canvas id="cpuChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Memory Usage</h3>
+                <canvas id="memoryChart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const cpuChartCtx = document.getElementById('cpuChart').getContext('2d');
+        const cpuChart = new Chart(cpuChartCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    data: []
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        const memoryChartCtx = document.getElementById('memoryChart').getContext('2d');
+        const memoryChart = new Chart(memoryChartCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Memory Usage (%)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    data: []
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        function fetchMetrics(metricType, chart) {
+            fetch(`/process_metrics?metric=${metricType}`)
+                .then(response => response.json())
+                .then(data => {
+                    chart.data.labels = Object.keys(data.metrics);
+                    chart.data.datasets[0].data = Object.values(data.metrics);
+                    chart.update();
+                });
+        }
+        
+
+
+
+        setInterval(() => fetchMetrics('cpu', cpuChart), 5000);
+        setInterval(() => fetchMetrics('memory', memoryChart), 5000);
+    </script>
+</body>
+
+</html>
